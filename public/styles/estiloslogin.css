@@ -147,6 +147,15 @@ h2 {
   box-shadow: 0 0 25px rgba(140, 17, 250, 0.7), 0 0 25px rgba(0, 156, 160, 0.7);
 }
 
+.encuestas{ 
+  color: white;
+  text-decoration: none;
+
+  &:hover{
+    color: blue;
+  }
+}
+
 
 /* ====== RESPONSIVIDAD ====== */
 

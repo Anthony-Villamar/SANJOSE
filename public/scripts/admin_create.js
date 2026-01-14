@@ -42,6 +42,273 @@ document.addEventListener('DOMContentLoaded', () => {
   // El select de actualización se llenará dinámicamente al buscar usuario (ver más abajo)
 });
 
+//verificar cedula y autocompletar nombre y apellido con api de web services
+const cedulaInput = document.getElementById('cedula');
+const nombreInput = document.getElementById('nombre');
+const apellidoInput = document.getElementById('apellido');
+const cedulaMensaje = document.getElementById('cedulaMensaje');
+
+
+async function consultarCedula(cedula) {
+  cedulaMensaje.textContent = "";
+  cedulaMensaje.className = "cedula-mensaje";
+  nombreInput.value = "";
+  apellidoInput.value = "";
+
+  if (cedula.length !== 10) {
+    cedulaMensaje.textContent = "La cédula debe tener 10 dígitos.";
+    cedulaMensaje.classList.add("error");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/usuarios/verificacion/${cedula}`);
+
+    if (!res.ok) throw new Error();
+
+    const data = await res.json();
+    const persona = data?.data?.response;
+
+    if (persona?.nombres && persona?.apellidos) {
+      nombreInput.value = persona.nombres;
+      apellidoInput.value = persona.apellidos;
+
+      cedulaMensaje.textContent = "Cédula encontrada. Datos cargados";
+      cedulaMensaje.classList.add("ok");
+    } else {
+      cedulaMensaje.textContent = "No se encontraron datos.";
+      cedulaMensaje.classList.add("error");
+    }
+  } catch (error) {
+    cedulaMensaje.textContent = "Cédula no existe o no se pudo consultar.";
+    cedulaMensaje.classList.add("error");
+  }
+}
+
+cedulaInput.addEventListener("change", () => {
+  const ced = cedulaInput.value.trim();
+  if (ced) consultarCedula(ced);
+});
+
+
+
+//verificar numero de whatsapp con web services
+// const telefonoInput = document.getElementById("telefono");
+// const telefonoMensaje = document.getElementById("telefonoMensaje");
+
+// async function validarWhatsApp(telefono) {
+//   telefonoMensaje.textContent = "";
+//   telefonoMensaje.className = "telefono-mensaje";
+
+//   // Validar formato básico
+//   if (!/^[0][0-9]{9}$/.test(telefono)) {
+//     telefonoMensaje.textContent = "Número inválido. Debe comenzar con 0 y tener 10 dígitos.";
+//     telefonoMensaje.classList.add("error");
+//     return;
+//   }
+
+//   // Convertir a formato internacional
+//   const telefonoInternacional = "593" + telefono.substring(1);
+
+//   console.log("Consultando:", telefonoInternacional);
+
+//   try {
+//     const headers = new Headers();
+//     headers.append("Authorization", "Bearer TOKEN");
+//     headers.append("Accept", "application/json");
+
+//     const res = await fetch(`/api/usuarios/verificacion-whatsapp/${telefonoInternacional}`, {
+//       method: "GET",
+//       headers
+//     });
+
+//     if (!res.ok) throw new Error();
+
+//     const data = await res.json();
+
+//     const info = data?.data;
+//     const existe = info?.is_valid === true && info?.status === "available";
+
+//     if (existe) {
+//       telefonoMensaje.textContent = "Este número SÍ tiene WhatsApp";
+//       telefonoMensaje.classList.add("ok");
+//     } else {
+//       telefonoMensaje.textContent = "Este número NO tiene WhatsApp";
+//       telefonoMensaje.classList.add("error");
+//     }
+
+//   } catch (err) {
+//     console.error(err);
+//     telefonoMensaje.textContent = "Error al verificar el número.";
+//     telefonoMensaje.classList.add("error");
+//   }
+// }
+
+// // Dispara validación cuando termine de escribir el número
+// telefonoInput.addEventListener("change", () => {
+//   const tel = telefonoInput.value.trim();
+//   if (tel) validarWhatsApp(tel);
+// });
+
+
+//verificar numero de whatsapp con apiconsult
+const telefonoInput = document.getElementById("telefono");
+const telefonoMensaje = document.getElementById("telefonoMensaje");
+
+async function validarWhatsApp(telefono) {
+  telefonoMensaje.textContent = "";
+  telefonoMensaje.className = "telefono-mensaje";
+
+  // Validar que tenga 10 dígitos y empiece con 0
+  if (!/^0\d{9}$/.test(telefono)) {
+    telefonoMensaje.textContent = "Número inválido. Debe comenzar con 0 y tener 10 dígitos.";
+    telefonoMensaje.classList.add("error");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/usuarios/verificacion-whatsapp/${telefono}`);
+
+    if (!res.ok) throw new Error("Error en verificación");
+
+    const data = await res.json();
+
+    const existe = data?.existe === true;
+
+    if (existe) {
+      telefonoMensaje.textContent = "Este número SÍ tiene WhatsApp";
+      telefonoMensaje.classList.add("ok");
+    } else {
+      telefonoMensaje.textContent = "Este número NO tiene WhatsApp";
+      telefonoMensaje.classList.add("error");
+    }
+  } catch (e) {
+    console.error(e);
+    telefonoMensaje.textContent = "Error al verificar el número.";
+    telefonoMensaje.classList.add("error");
+  }
+}
+
+telefonoInput.addEventListener("change", () => {
+  const tel = telefonoInput.value.trim();
+  if (tel) validarWhatsApp(tel);
+});
+
+// Gestión de verificación por SMS usando Twilio Verify
+// const telefonoInput = document.getElementById("telefono");
+// const telefonoMensaje = document.getElementById("telefonoMensaje");
+// const btnEnviarCodigo = document.getElementById("btnEnviarCodigo");
+
+// let telefonoVerificado = false;
+// let telefonoUsadoParaOTP = null;
+
+// // Función para mostrar el modal y verificar el código
+// async function pedirCodigoEnModal(telefono) {
+//   const { value: codigo } = await Swal.fire({
+//     title: 'Ingresa el código SMS',
+//     text: `Hemos enviado un código al número ${telefono}.`,
+//     input: 'text',
+//     inputLabel: 'Código de verificación',
+//     inputPlaceholder: 'Ej: 123456',
+//     inputAttributes: {
+//       maxlength: '6',
+//       autocapitalize: 'off',
+//       autocorrect: 'off'
+//     },
+//     showCancelButton: true,
+//     confirmButtonText: 'Verificar',
+//     cancelButtonText: 'Cancelar'
+//   });
+
+//   // Si cierra el modal o no escribe nada, no hacemos nada
+//   if (!codigo) return;
+
+//   try {
+//     const res = await fetch("/api/twilio/verificar", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ telefono, codigo })
+//     });
+
+//     const data = await res.json();
+
+//     if (res.ok && data.success) {
+//       telefonoVerificado = true;
+//       telefonoUsadoParaOTP = telefono;
+
+//       await Swal.fire({
+//         icon: 'success',
+//         title: 'Teléfono verificado',
+//         text: 'El código es correcto. Puedes continuar con el registro.'
+//       });
+//     } else {
+//       telefonoVerificado = false;
+//       await Swal.fire({
+//         icon: 'error',
+//         title: 'Código incorrecto',
+//         text: data.message || 'El código es incorrecto o ha expirado.'
+//       });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     telefonoVerificado = false;
+//     await Swal.fire({
+//       icon: 'error',
+//       title: 'Error',
+//       text: 'Error al verificar el código.'
+//     });
+//   }
+// }
+
+// // Enviar código SMS
+// btnEnviarCodigo.addEventListener("click", async () => {
+//   telefonoMensaje.textContent = "";
+//   telefonoMensaje.className = "telefono-mensaje";
+//   telefonoVerificado = false;
+//   telefonoUsadoParaOTP = null;
+
+//   const telefono = telefonoInput.value.trim(); // formato local: 0XXXXXXXXX
+
+//   // Validar formato 0XXXXXXXXX
+//   if (!/^0\d{9}$/.test(telefono)) {
+//     telefonoMensaje.textContent = "Número inválido. Debe comenzar con 0 y tener 10 dígitos.";
+//     telefonoMensaje.classList.add("error");
+//     return;
+//   }
+
+//   try {
+//     btnEnviarCodigo.disabled = true;
+//     btnEnviarCodigo.textContent = "Enviando...";
+
+//     const res = await fetch("/api/twilio/enviar", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ telefono })
+//     });
+
+//     const data = await res.json();
+
+//     if (res.ok && data.success) {
+//       telefonoMensaje.textContent = "Código enviado por SMS. Revisa tu teléfono.";
+//       telefonoMensaje.classList.add("ok");
+
+//       // Abrimos el modal para que escriba el código
+//       await pedirCodigoEnModal(telefono);
+//     } else {
+//       telefonoMensaje.textContent = data.error || "No se pudo enviar el código.";
+//       telefonoMensaje.classList.add("error");
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     telefonoMensaje.textContent = "Error al enviar el código.";
+//     telefonoMensaje.classList.add("error");
+//   } finally {
+//     btnEnviarCodigo.disabled = false;
+//     btnEnviarCodigo.textContent = "Enviar código SMS";
+//   }
+// });
+
+
 // Registro de usuarios
 document.getElementById('registroForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -65,6 +332,16 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
   const regexContrasena = /^[a-zA-Z0-9]+$/;
   if (!regexContrasena.test(contrasena)) {
     alert('La contraseña solo puede contener letras y números.');
+    return;
+  }
+
+  //Verificar que el teléfono esté verificado
+  if (!telefonoVerificado || telefono !== telefonoUsadoParaOTP) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Teléfono no verificado',
+      text: 'Debes verificar el número por SMS antes de registrar al usuario.'
+    });
     return;
   }
 

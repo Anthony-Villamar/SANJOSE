@@ -291,6 +291,77 @@ usuariosRouter.get('/admin-list', async (req, res) => {
   }
 });
 
+//validar cédula con web service externo
+usuariosRouter.get("/verificacion/:cedula", async (req, res) => {
+  const cedula = req.params.cedula;
+
+  try {
+    const r = await fetch(`https://webservices.ec/api/cedula/${cedula}`, {
+      headers: {
+        "Authorization": `Bearer ${process.env.TOKEN_WEB_SERVICES}`,
+        "Accept": "application/json"
+      }
+    });
+
+    const data = await r.json();
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error consultando cédula" });
+  }
+});
+
+//valiar whatsapp con web service externo aun probando si usarlo o no con este porque cobra
+// usuariosRouter.get("/verificacion-whatsapp/:telefono", async (req, res) => {
+//   const telefono = req.params.telefono;
+
+//   try {
+//     const r = await fetch(`https://webservices.ec/api/checkwhatsapp/${telefono}`, {
+//       headers: {
+//         "Authorization": `Bearer ${process.env.TOKEN_WEB_SERVICES}`,
+//         "Accept": "application/json"
+//       }
+//     });
+
+//     const data = await r.json();
+//     res.json(data); // devolvemos la respuesta tal cual
+//   } catch (err) {
+//     console.error("ERROR WHATSAPP API:", err);
+//     res.status(500).json({ error: "Error al consultar WhatsApp" });
+//   }
+// });
+
+
+// Verificar si un número tiene WhatsApp usando Zampisoft no cobra por consulta
+usuariosRouter.get("/verificacion-whatsapp/:telefonoLocal", async (req, res) => {
+  const telefonoLocal = req.params.telefonoLocal;
+
+  try {
+    // Validación básica: 10 dígitos y empieza con 0
+    const regexTel = /^0\d{9}$/;
+    if (!regexTel.test(telefonoLocal)) {
+      return res.status(400).json({ error: "Número de teléfono inválido" });
+    }
+
+    // Convertir a formato internacional: +593 + sin el primer 0
+    const telefonoInternacional = `+593${telefonoLocal.slice(1)}`;
+
+    const url = `https://apiconsult.zampisoft.com/api/check-phone?phone=${encodeURIComponent(telefonoInternacional)}&token=${process.env.ZAMPISOFT_TOKEN}`;
+
+    const r = await fetch(url); // si tu Node no tiene fetch nativo: import fetch from 'node-fetch'
+    if (!r.ok) {
+      console.error("Error Zampisoft:", r.status, await r.text());
+      return res.status(502).json({ error: "Error al consultar servicio de WhatsApp" });
+    }
+
+    const data = await r.json();
+    res.json(data); // devolvemos tal cual lo que responde Zampisoft
+  } catch (err) {
+    console.error("ERROR WHATSAPP API:", err);
+    res.status(500).json({ error: "Error interno al verificar WhatsApp" });
+  }
+});
+
 
 //obtener usuario por rol para encuestas
 usuariosRouter.get("/:rolfetch", async (req, res) => {
@@ -313,6 +384,29 @@ usuariosRouter.get("/:rolfetch", async (req, res) => {
   catch (error) {
     console.error("Error al obtener usuarios por rol:", error);
     res.status(500).json({ error: "Error al obtener usuarios por rol" });
+  }
+});
+
+
+
+//ENDPOINTS NUEVOS 
+usuariosRouter.get('/area/:area', async (req, res) => {
+  const { area } = req.params;
+
+  try {
+    const [rows] = await db.query(`
+      SELECT p.cedula, p.nombre, p.apellido
+      FROM usuarios u
+      JOIN personas p ON u.cedula = p.cedula
+      JOIN roles r ON u.id_rol = r.id_rol
+      WHERE r.nombre_rol = ?
+        AND u.estado = 'activo'
+    `, [area]);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al cargar personal" });
   }
 });
 

@@ -558,6 +558,32 @@ body.dark-theme .theme-toggle-indicator {
   color: #6d86a6;
 }
 
+.cedula-mensaje {
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.cedula-mensaje.ok {
+  color: #28a745;
+}
+
+.cedula-mensaje.error {
+  color: #dc3545;
+}
+
+.telefono-mensaje {
+  margin-top: 3px;
+  font-size: .85rem;
+}
+
+.telefono-mensaje.ok {
+  color: #28a745;
+}
+
+.telefono-mensaje.error {
+  color: #dc3545;
+}
+
 .input-with-icon input,
 .input-with-icon select {
   border: none;
@@ -736,6 +762,7 @@ body.dark-theme .theme-toggle-indicator {
 .data-table tbody td {
   padding: 12px;
   border-bottom: 1px solid #eef2f7;
+  text-align: center;
 }
 
 .data-table tbody tr:nth-child(even) {

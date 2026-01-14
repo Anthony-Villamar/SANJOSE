@@ -333,12 +333,12 @@ option {
   padding-top: 50px;
 }
 
-/* Cambiar icono al seleccionar solo para la pregunta 1*/
+/* Cambiar icono al seleccionar una opcion cuando hay 5 opciones
 #p1:checked~label[for="p1"]::before,
 #t1:checked~label[for="t1"]::before,
 #r1:checked~label[for="r1"]::before {
   background-image: url("../assets/Emoji Sad/SVG/ic_fluent_emoji_sad_20_filled.svg");
-  /* cara triste */
+  cara triste 
 
   transform: translateX(-50%) scale(1.2);
 }
@@ -348,7 +348,7 @@ option {
 #r2:checked~label[for="r2"]::before {
   background-image: url("../assets/Emoji Sad Slight/SVG/ic_fluent_emoji_sad_slight_20_filled.svg");
 
-  /* triste */
+   triste 
   transform: translateX(-50%) scale(1.2);
 }
 
@@ -356,7 +356,7 @@ option {
 #t3:checked~label[for="t3"]::before,
 #r3:checked~label[for="r3"]::before {
   background-image: url("../assets/Emoji/SVG/ic_fluent_emoji_20_filled.svg");
-  /* neutral */
+   neutral 
   transform: translateX(-50%) scale(1.2);
 }
 
@@ -365,7 +365,7 @@ option {
 #r4:checked~label[for="r4"]::before {
 
   background-image: url("../assets/Emoji Sparkle/SVG/ic_fluent_emoji_sparkle_20_filled.svg");
-  /* feliz */
+   feliz 
   transform: translateX(-50%) scale(1.2);
 }
 
@@ -373,11 +373,31 @@ option {
 #t5:checked~label[for="t5"]::before,
 #r5:checked~label[for="r5"]::before {
   background-image: url("../assets/Emoji Laugh/SVG/ic_fluent_emoji_laugh_20_filled.svg");
-  /* excelente */
+   excelente 
+  transform: translateX(-50%) scale(1.2);
+} */
+
+/*Cuando hay 3 opciones*/
+#p1:checked~label[for="p1"]::before,
+#t1:checked~label[for="t1"]::before,
+#r1:checked~label[for="r1"]::before {
+  background-image: url("../assets/Emoji Sad Slight/SVG/ic_fluent_emoji_sad_slight_20_filled.svg");
   transform: translateX(-50%) scale(1.2);
 }
 
+#p2:checked~label[for="p2"]::before,
+#t2:checked~label[for="t2"]::before,
+#r2:checked~label[for="r2"]::before {
+  background-image: url("../assets/Emoji/SVG/ic_fluent_emoji_20_filled.svg");
+  transform: translateX(-50%) scale(1.2);
+}
 
+#p3:checked~label[for="p3"]::before,
+#t3:checked~label[for="t3"]::before,
+#r3:checked~label[for="r3"]::before {
+  background-image: url("../assets/Emoji Laugh/SVG/ic_fluent_emoji_laugh_20_filled.svg");
+  transform: translateX(-50%) scale(1.2);
+}
 
 /* Hover */
 .preguntas label:hover {

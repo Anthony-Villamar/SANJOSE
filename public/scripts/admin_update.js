@@ -12,6 +12,49 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+//verificar numero de whatsapp con apiconsult
+const telefonoInput = document.getElementById("telefonoActualizar");
+const telefonoMensaje = document.getElementById("telefonoMensaje");
+
+async function validarWhatsApp(telefono) {
+  telefonoMensaje.textContent = "";
+  telefonoMensaje.className = "telefono-mensaje";
+
+  // Validar que tenga 10 dígitos y empiece con 0
+  if (!/^0\d{9}$/.test(telefono)) {
+    telefonoMensaje.textContent = "Número inválido. Debe comenzar con 0 y tener 10 dígitos.";
+    telefonoMensaje.classList.add("error");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/usuarios/verificacion-whatsapp/${telefono}`);
+
+    if (!res.ok) throw new Error("Error en verificación");
+
+    const data = await res.json();
+
+    const existe = data?.existe === true;
+
+    if (existe) {
+      telefonoMensaje.textContent = "Este número SÍ tiene WhatsApp";
+      telefonoMensaje.classList.add("ok");
+    } else {
+      telefonoMensaje.textContent = "Este número NO tiene WhatsApp";
+      telefonoMensaje.classList.add("error");
+    }
+  } catch (e) {
+    console.error(e);
+    telefonoMensaje.textContent = "Error al verificar el número.";
+    telefonoMensaje.classList.add("error");
+  }
+}
+
+telefonoInput.addEventListener("change", () => {
+  const tel = telefonoInput.value.trim();
+  if (tel) validarWhatsApp(tel);
+});
+
 // Función para cargar roles dinámicamente en un select
 async function cargarRoles(selectElement, selectedRol = '') {
   try {

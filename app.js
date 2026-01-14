@@ -12,6 +12,7 @@ import estadisticasRouter from './routes/estadisticas.js';
 import usuariosRouter from './routes/usuarios.js';
 import { verificarSesion } from './middleware/sesions.js';
 import iaRouter from './routes/ia.js';
+import verifyRouter from "./routes/twilio.js";
 
 // Config
 dotenv.config();
@@ -34,8 +35,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    // secure: true, // cámbialo a true si usas HTTPS
-    // sameSite: "lax", // "none" si usas frontend en otro dominio con HTTPS y lax si es el mismo dominio
+    // secure: true, // cámbiarlo a true si se usa HTTPS
+    // sameSite: "lax", // "none" si se usa el frontend en otro dominio con HTTPS y lax si es el mismo dominio
     secure: process.env.NODE_ENV === "production", 
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 1000 * 60 * 60 * 7 // 7 horas
@@ -48,7 +49,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Servir frontend (tu carpeta public con index.html y demás)
+// Servir frontend edn la carpeta public
 app.use(express.static(path.join(__dirname, "public")));
 
 
@@ -58,9 +59,10 @@ app.use('/api/encuestas', encuestasRouter);
 app.use('/api/estadisticas', estadisticasRouter);
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api', iaRouter);
+app.use("/api/twilio", verifyRouter);
 
 
-// Redirigir al index.html para rutas del frontend
+// Redirecciones a páginas
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
@@ -79,9 +81,9 @@ app.get('/administrador_update',verificarSesion, (req, res) => {
 app.get('/administrador_deactivation',verificarSesion, (req, res) => {
   res.sendFile(path.join(__dirname, "public","pages","administrador_deactivation.html"));
 });
-app.get('/encuestas',verificarSesion, (req, res) => {
-  res.sendFile(path.join(__dirname, "public","pages","encuestas.html"));
-});
+// app.get('/encuestas',verificarSesion, (req, res) => {
+//   res.sendFile(path.join(__dirname, "public","pages","encuestas.html"));
+// });
 app.get('/area_secretaria',verificarSesion, (req, res) => {
   res.sendFile(path.join(__dirname, "public","pages","area_secretaria.html"));
 });
@@ -90,6 +92,12 @@ app.get('/area_colecturia',verificarSesion, (req, res) => {
 });
 app.get('/area_docente',verificarSesion, (req, res) => {
   res.sendFile(path.join(__dirname, "public","pages","area_docente.html"));
+});
+app.get('/secretaria', (req, res) => {
+  res.sendFile(path.join(__dirname, "public","pages","encuesta_secretaria.html"));
+});
+app.get('/colecturia', (req, res) => {
+  res.sendFile(path.join(__dirname, "public","pages","encuesta_colecturia.html"));
 });
 
 

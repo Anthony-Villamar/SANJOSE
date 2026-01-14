@@ -67,9 +67,11 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         window.location.href = "/area_docente";
       } else if (me.rol === 'colecturia') {
         window.location.href = "/area_colecturia";
-      } else if (me.rol.startsWith('evaluador')) {
-        window.location.href = "/encuestas";
-      } else {
+      } 
+      // else if (me.rol.startsWith('evaluador')) {
+      //   window.location.href = "/encuestas";
+      // } 
+      else {
         alert("Rol no reconocido.");
       }
     } else {
