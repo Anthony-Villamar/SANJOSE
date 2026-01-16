@@ -109,7 +109,7 @@ form.addEventListener('submit', async (e) => {
 // --- MODO "UNA PREGUNTA POR PANTALLA" EN MÓVILES ---
 function activarModoPreguntaPorPantalla() {
     const preguntas = document.querySelectorAll('.preguntas-container, .preguntas-container-motivo, .comentario-container');
-    const esMovil = window.innerWidth <= 768;
+    const esMovil = window.innerWidth <= 1024 && window.innerWidth >= 300;
 
     // Evitar reejecución innecesaria
     if (activarModoPreguntaPorPantalla.modoActual === esMovil) return;

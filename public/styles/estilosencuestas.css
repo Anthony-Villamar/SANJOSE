@@ -541,6 +541,10 @@ option {
     width: 90%;
     font-size: 1.1rem;
   }
+  #atendido_por1 {
+    flex-direction: column;
+    gap: 5px;  
+  }
 
   #footerContent>div>p {
     font-size: 0.95rem;
@@ -613,6 +617,12 @@ option {
   /* Evitar que el contenido quede pegado al header */
   #mainContent {
     padding-top: 16dvh;
+  }
+
+  #atendido_por1 {
+    flex-direction: column;
+    gap: 10px;
+  
   }
 
   .encuesta-container {
