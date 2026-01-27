@@ -97,6 +97,11 @@ form.addEventListener('submit', async (e) => {
             });
             form.reset();
             atendidoSelect.selectedIndex = 0;
+
+            if (activarModoPreguntaPorPantalla.modoActual) {
+        activarModoPreguntaPorPantalla.modoActual = null;
+        activarModoPreguntaPorPantalla();
+    }
         } else {
             Swal.fire("Error", "No se pudo guardar la encuesta", "error");
         }
@@ -105,23 +110,25 @@ form.addEventListener('submit', async (e) => {
     }
 });
 
-
-// --- MODO "UNA PREGUNTA POR PANTALLA" EN MÓVILES ---
+// Modo pregunta por pantalla
 function activarModoPreguntaPorPantalla() {
-    const preguntas = document.querySelectorAll('.preguntas-container, .preguntas-container-motivo, .comentario-container');
-    const esMovil = window.innerWidth <= 1024 && window.innerWidth >= 300;
+    const preguntas = document.querySelectorAll(
+      '.preguntas-container, .preguntas-container-motivo, .comentario-container'
+    );
 
-    // Evitar reejecución innecesaria
-    if (activarModoPreguntaPorPantalla.modoActual === esMovil) return;
-    activarModoPreguntaPorPantalla.modoActual = esMovil;
+    const esHorizontal = window.matchMedia("(orientation: landscape)").matches;
+    const esTouch = navigator.maxTouchPoints > 0;
+    const activarModo = esHorizontal && esTouch;
 
-    // Restablecer visibilidad
+    if (activarModoPreguntaPorPantalla.modoActual === activarModo) return;
+    activarModoPreguntaPorPantalla.modoActual = activarModo;
+
     preguntas.forEach(p => {
         p.style.display = "flex";
         p.classList.remove("oculto");
     });
 
-    if (esMovil) {
+    if (activarModo) {
         let actual = 0;
 
         const mostrarPregunta = (i) => {
@@ -136,14 +143,12 @@ function activarModoPreguntaPorPantalla() {
             });
         };
 
-        // Ocultar todas menos la primera
         mostrarPregunta(0);
 
-        // Escuchar cambios una sola vez
         preguntas.forEach((pregunta, idx) => {
             const inputs = pregunta.querySelectorAll("input, select, textarea");
             inputs.forEach((input) => {
-                if (!input.dataset.listenerAdded) { // evita duplicar
+                if (!input.dataset.listenerAdded) {
                     input.dataset.listenerAdded = true;
                     input.addEventListener("change", () => {
                         if (idx < preguntas.length - 1) {
@@ -157,6 +162,7 @@ function activarModoPreguntaPorPantalla() {
         });
     }
 }
+
 
 // Ejecutar en carga y al cambiar tamaño
 window.addEventListener("DOMContentLoaded", activarModoPreguntaPorPantalla);

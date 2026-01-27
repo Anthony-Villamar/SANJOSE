@@ -252,7 +252,8 @@ option {
 
 .preguntas-container,
 .preguntas-container-motivo,
-.comentario-container {
+.comentario-container ,
+.boton-container{
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
@@ -382,7 +383,7 @@ option {
 #p1:checked~label[for="p1"]::before,
 #t1:checked~label[for="t1"]::before,
 #r1:checked~label[for="r1"]::before {
-  background-image: url("../assets/Emoji Sad Slight/SVG/ic_fluent_emoji_sad_slight_20_filled.svg");
+  background-image: url("../assets/Emoji Laugh/SVG/ic_fluent_emoji_laugh_20_filled.svg");
   transform: translateX(-50%) scale(1.2);
 }
 
@@ -396,7 +397,7 @@ option {
 #p3:checked~label[for="p3"]::before,
 #t3:checked~label[for="t3"]::before,
 #r3:checked~label[for="r3"]::before {
-  background-image: url("../assets/Emoji Laugh/SVG/ic_fluent_emoji_laugh_20_filled.svg");
+  background-image: url("../assets/Emoji Sad Slight/SVG/ic_fluent_emoji_sad_slight_20_filled.svg");
   transform: translateX(-50%) scale(1.2);
 }
 
@@ -415,6 +416,14 @@ option {
 }
 
 /* Botón */
+.boton-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
 #mainContent button {
   padding: 12px;
   border: none;
