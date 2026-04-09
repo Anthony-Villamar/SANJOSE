@@ -308,6 +308,53 @@ telefonoInput.addEventListener("change", () => {
 //   }
 // });
 
+//verificar correo
+const correoInput = document.getElementById("correo");
+const correoMensaje = document.getElementById("correoMensaje");
+
+let correoValido = false;
+
+async function verificarCorreo(correo) {
+  correoMensaje.textContent = "";
+  correoMensaje.className = "correo-mensaje";
+
+  // ✅ Validación rápida en frontend
+  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!regexEmail.test(correo)) {
+    correoMensaje.textContent = "Formato de correo inválido";
+    correoMensaje.classList.add("error");
+    correoValido = false;
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/usuarios/verificacion-email/${correo}`);
+    const data = await res.json();
+
+    const esValido = data.status === "valid" && data.sub_status === "permitted";
+
+    if (esValido) {
+      correoMensaje.textContent = "Correo válido";
+      correoMensaje.classList.add("ok");
+      correoValido = true;
+    } else {
+      correoMensaje.textContent = "Correo no válido o no permitido";
+      correoMensaje.classList.add("error");
+      correoValido = false;
+    }
+  } catch (error) {
+    console.error(error);
+    correoMensaje.textContent = "Error al verificar correo";
+    correoMensaje.classList.add("error");
+    correoValido = false;
+  }
+}
+
+correoInput.addEventListener("change", () => {
+  const correo = correoInput.value.trim();
+  if (correo) verificarCorreo(correo);
+});
 
 // Registro de usuarios
 document.getElementById('registroForm').addEventListener('submit', async (e) => {
@@ -336,11 +383,20 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
   }
 
   //Verificar que el teléfono esté verificado
-  if (!telefonoVerificado || telefono !== telefonoUsadoParaOTP) {
+  // if (!telefonoVerificado || telefono !== telefonoUsadoParaOTP) {
+  // Swal.fire({
+  //     icon: 'warning',
+  //     title: 'Teléfono no verificado',
+  //     text: 'Debes verificar el número por SMS antes de registrar al usuario.'
+  //   });
+  //   return;
+  // }
+
+  if (!correoValido) {
     Swal.fire({
       icon: 'warning',
-      title: 'Teléfono no verificado',
-      text: 'Debes verificar el número por SMS antes de registrar al usuario.'
+      title: 'Correo inválido',
+      text: 'Debes ingresar un correo válido antes de registrar.'
     });
     return;
   }

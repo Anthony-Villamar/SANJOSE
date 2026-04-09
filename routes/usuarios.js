@@ -363,6 +363,35 @@ usuariosRouter.get("/verificacion-whatsapp/:telefonoLocal", async (req, res) => 
 });
 
 
+//verificador de email con emailverify
+usuariosRouter.get("/verificacion-email/:correo", async (req, res) => {
+  const correo = req.params.correo;
+
+  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!regexEmail.test(correo)) {
+    return res.status(400).json({ error: "Correo inválido" });
+  }
+  
+  try {
+    const url = `https://app.emailverify.io/api/v1/validate?key=${process.env.EMAIL_VERIFY_KEY}&email=${encodeURIComponent(correo)}`;
+
+    const r = await fetch(url);
+
+    if (!r.ok) {
+      console.error("Error Email API:", r.status, await r.text());
+      return res.status(502).json({ error: "Error al validar email" });
+    }
+
+    const data = await r.json();
+
+    res.json(data);
+  } catch (err) {
+    console.error("ERROR EMAIL API:", err);
+    res.status(500).json({ error: "Error interno al verificar email" });
+  }
+});
+
 //obtener usuario por rol para encuestas
 usuariosRouter.get("/:rolfetch", async (req, res) => {
   const rol = req.params.rolfetch;

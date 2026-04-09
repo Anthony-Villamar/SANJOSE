@@ -584,6 +584,17 @@ body.dark-theme .theme-toggle-indicator {
   color: #dc3545;
 }
 
+.correo-mensaje {
+  margin-top: 3px;
+  font-size: .85rem;
+}
+.correo-mensaje.ok {
+  color: #28a745;
+}
+.correo-mensaje.error {
+  color: #dc3545;
+}
+
 .input-with-icon input,
 .input-with-icon select {
   border: none;
