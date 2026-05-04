@@ -4,6 +4,31 @@ import bcrypt from 'bcrypt';
 
 const usuariosRouter = express.Router();
 
+
+const fetchConTimeout = async (url, options = {}, timeout = 8000) => {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const res = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+
+    clearTimeout(id);
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`API ERROR ${res.status}: ${text}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    clearTimeout(id);
+    throw err;
+  }
+};
+
 // Obtener todos los usuarios (nombre y cédula)
 usuariosRouter.get('/', async (req, res) => {
   try {
@@ -291,27 +316,103 @@ usuariosRouter.get('/admin-list', async (req, res) => {
   }
 });
 
+
+//ENDPOINT ANTIGUOS --> los que estan comentados, sirven pero no hacen la verificacion aqui sino en el frontend
 //validar cédula con web service externo
 usuariosRouter.get("/verificacion/:cedula", async (req, res) => {
-  const cedula = req.params.cedula;
+  const { cedula } = req.params;
+
+  if (!/^\d{10}$/.test(cedula)) {
+    return res.status(400).json({
+      ok: false,
+      message: "Cédula inválida"
+    });
+  }
 
   try {
-    const r = await fetch(`https://webservices.ec/api/cedula/${cedula}`, {
-      headers: {
-        "Authorization": `Bearer ${process.env.TOKEN_WEB_SERVICES}`,
-        "Accept": "application/json"
-      }
+    const data = await fetchConTimeout(
+      `https://webservices.ec/api/cedula/${cedula}`,
+      { headers: { Accept: "application/json" } }
+    );
+
+    const persona = data?.data?.response;
+
+    if (!persona) {
+      return res.json({ ok: false, message: "No encontrada" });
+    }
+
+    res.json({
+      ok: true,
+      nombres: persona.nombres,
+      apellidos: persona.apellidos
     });
 
-    const data = await r.json();
-    res.json(data);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error consultando cédula" });
+    console.error("CEDULA ERROR:", err.message);
+
+    res.status(500).json({
+      ok: false,
+      message: "Error consultando cédula"
+    });
   }
 });
+// usuariosRouter.get("/verificacion/:cedula", async (req, res) => {
+//   const cedula = req.params.cedula;
+
+//   try {
+//     const r = await fetch(`https://webservices.ec/api/cedula/${cedula}`, {
+//       headers: {
+//         "Accept": "application/json",
+//         redirect: "follow",
+//       }
+//     });
+
+//     const data = await r.json();
+//     res.json(data);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Error consultando cédula" });
+//   }
+// });
 
 //valiar whatsapp con web service externo aun probando si usarlo o no con este porque cobra
+usuariosRouter.get("/verificacion-whatsapp/:telefono", async (req, res) => {
+  let { telefono } = req.params;
+
+  if (!/^0\d{9}$/.test(telefono)) {
+    return res.status(400).json({
+      ok: false,
+      message: "Formato inválido"
+    });
+  }
+
+  const telefonoIntl = "593" + telefono.slice(1);
+
+  try {
+    const data = await fetchConTimeout(
+      `https://webservices.ec/api/checkwhatsapp/${telefonoIntl}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TOKEN_WEB_SERVICES}`,
+          Accept: "application/json"
+        }
+      }
+    );
+
+    res.json({
+      ok: true,
+      isValid: data?.data?.is_valid === true
+    });
+
+  } catch (err) {
+    console.error("WHATSAPP ERROR:", err.message);
+
+    res.status(500).json({
+      ok: false,
+      message: "Error verificando WhatsApp"
+    });
+  }
+});
 // usuariosRouter.get("/verificacion-whatsapp/:telefono", async (req, res) => {
 //   const telefono = req.params.telefono;
 
@@ -324,79 +425,135 @@ usuariosRouter.get("/verificacion/:cedula", async (req, res) => {
 //     });
 
 //     const data = await r.json();
-//     res.json(data); // devolvemos la respuesta tal cual
+//     res.json(data);
 //   } catch (err) {
 //     console.error("ERROR WHATSAPP API:", err);
 //     res.status(500).json({ error: "Error al consultar WhatsApp" });
 //   }
 // });
 
+// usuariosRouter.get("/verificacion-whatsapp/:telefono", async (req, res) => {
+//   let { telefono } = req.params;
 
-// Verificar si un número tiene WhatsApp usando Zampisoft no cobra por consulta
-usuariosRouter.get("/verificacion-whatsapp/:telefonoLocal", async (req, res) => {
-  const telefonoLocal = req.params.telefonoLocal;
+//   // 🔹 Validar formato local Ecuador
+//   if (!/^0\d{9}$/.test(telefono)) {
+//     return res.status(400).json({
+//       error: "Número inválido (formato local)"
+//     });
+//   }
 
-  try {
-    // Validación básica: 10 dígitos y empieza con 0
-    const regexTel = /^0\d{9}$/;
-    if (!regexTel.test(telefonoLocal)) {
-      return res.status(400).json({ error: "Número de teléfono inválido" });
-    }
+//   // 🔥 Convertir a formato internacional
+//   telefono = "593" + telefono.slice(1);
 
-    // Convertir a formato internacional: +593 + sin el primer 0
-    const telefonoInternacional = `+593${telefonoLocal.slice(1)}`;
+//   try {
+//     const response = await fetch(`https://webservices.ec/api/checkwhatsapp/${telefono}`, {
+//       method: "GET",
+//       headers: {
+//         Authorization: `Bearer ${process.env.TOKEN_WEB_SERVICES}`,
+//         Accept: "application/json"
+//       }
+//     });
 
-    const url = `https://apiconsult.zampisoft.com/api/check-phone?phone=${encodeURIComponent(telefonoInternacional)}&token=${process.env.ZAMPISOFT_TOKEN}`;
+//     if (!response.ok) {
+//       return res.status(response.status).json({
+//         error: "Error en API externa"
+//       });
+//     }
 
-    const r = await fetch(url); // si tu Node no tiene fetch nativo: import fetch from 'node-fetch'
-    if (!r.ok) {
-      console.error("Error Zampisoft:", r.status, await r.text());
-      return res.status(502).json({ error: "Error al consultar servicio de WhatsApp" });
-    }
+//     const data = await response.json();
 
-    const data = await r.json();
-    res.json(data); // devolvemos tal cual lo que responde Zampisoft
-  } catch (err) {
-    console.error("ERROR WHATSAPP API:", err);
-    res.status(500).json({ error: "Error interno al verificar WhatsApp" });
-  }
-});
+//     console.log("API externa:", data);
 
+//     // 🔥 Normalizar respuesta
+//     const resultado = {
+//       is_valid: data?.data?.is_valid === true,
+//       status: data?.data?.status || "unknown"
+//     };
+
+//     res.json(resultado);
+
+//   } catch (error) {
+//     console.error("ERROR WHATSAPP API:", error);
+
+//     res.status(500).json({
+//       error: "Error al verificar WhatsApp"
+//     });
+//   }
+// });
 
 //verificador de email con emailverify
 usuariosRouter.get("/verificacion-email/:correo", async (req, res) => {
-  const correo = req.params.correo;
+  const { correo } = req.params;
 
-  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const dominiosPermitidos = ["gmail.com", "sociedaddebeneficencia.org"];
 
-  if (!regexEmail.test(correo)) {
-    return res.status(400).json({ error: "Correo inválido" });
+  if (!regex.test(correo)) {
+    return res.status(400).json({ ok: false, message: "Formato inválido" });
   }
-  
+
+  const dominio = correo.split("@")[1];
+  if (!dominiosPermitidos.includes(dominio)) {
+    return res.status(400).json({
+      ok: false,
+      message: "Dominio no permitido"
+    });
+  }
+
   try {
-    const url = `https://app.emailverify.io/api/v1/validate?key=${process.env.EMAIL_VERIFY_KEY}&email=${encodeURIComponent(correo)}`;
+    const data = await fetchConTimeout(
+      `https://app.emailverify.io/api/v1/validate?key=${process.env.EMAIL_VERIFY_KEY}&email=${encodeURIComponent(correo)}`
+    );
 
-    const r = await fetch(url);
+    res.json({
+      ok: true,
+      isValid: data.status === "valid"
+    });
 
-    if (!r.ok) {
-      console.error("Error Email API:", r.status, await r.text());
-      return res.status(502).json({ error: "Error al validar email" });
-    }
-
-    const data = await r.json();
-
-    res.json(data);
   } catch (err) {
-    console.error("ERROR EMAIL API:", err);
-    res.status(500).json({ error: "Error interno al verificar email" });
+    console.error("EMAIL ERROR:", err.message);
+
+    res.status(500).json({
+      ok: false,
+      message: "Error verificando email"
+    });
   }
 });
+
+// usuariosRouter.get("/verificacion-email/:correo", async (req, res) => {
+//   const correo = req.params.correo;
+
+//   const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+//   if (!regexEmail.test(correo)) {
+//     return res.status(400).json({ error: "Correo inválido" });
+//   }
+
+//   try {
+//     const url = `https://app.emailverify.io/api/v1/validate?key=${process.env.EMAIL_VERIFY_KEY}&email=${encodeURIComponent(correo)}`;
+
+//     const r = await fetch(url);
+
+//     if (!r.ok) {
+//       console.error("Error Email API:", r.status, await r.text());
+//       return res.status(502).json({ error: "Error al validar email" });
+//     }
+
+//     const data = await r.json();
+
+//     res.json(data);
+//   } catch (err) {
+//     console.error("ERROR EMAIL API:", err);
+//     res.status(500).json({ error: "Error interno al verificar email" });
+//   }
+// });
+
 
 //obtener usuario por rol para encuestas
 usuariosRouter.get("/:rolfetch", async (req, res) => {
   const rol = req.params.rolfetch;
   try {
-   const [usuarios] = await db.query(`
+    const [usuarios] = await db.query(`
       SELECT p.cedula, p.nombre, p.apellido
       FROM personas p
       JOIN usuarios u ON p.cedula = u.cedula
@@ -405,10 +562,10 @@ usuariosRouter.get("/:rolfetch", async (req, res) => {
       AND u.estado = 'activo'
       AND u.cedula NOT IN ('0000000001', '0000000002', '0000000003')
     `, [rol]);
-      
-  
-  res.json(usuarios);
-    
+
+
+    res.json(usuarios);
+
   }
   catch (error) {
     console.error("Error al obtener usuarios por rol:", error);
