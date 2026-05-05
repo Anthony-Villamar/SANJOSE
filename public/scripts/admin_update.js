@@ -102,6 +102,60 @@ async function cargarRoles(selectElement, selectedRol = '') {
   }
 }
 
+//verificar correo
+async function apiFetch(url, options = {}) {
+  try {
+    const res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+      ...options
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || "Error");
+
+    return data;
+  } catch (err) {
+    console.error("API ERROR:", err);
+    throw err;
+  }
+}
+const correoInput = document.getElementById("correoActualizar");
+const correoMensaje = document.getElementById("correoMensaje");
+
+let correoValido = false;
+let timeoutCorreo;
+correoInput.addEventListener("input", () => {
+  clearTimeout(timeoutCorreo);
+
+  timeoutCorreo = setTimeout(async () => {
+    const correo = correoInput.value.trim();
+    if (!correo) return;
+
+    correoMensaje.textContent = "Verificando...";
+
+    try {
+      const data = await apiFetch(`/api/usuarios/verificacion-email/${correo}`);
+
+      correoValido = data.isValid;
+
+      correoMensaje.textContent = data.isValid
+        ? "Correo válido"
+        : "Correo inválido";
+
+      correoMensaje.classList.add(data.isValid ? "ok" : "error");
+
+    } catch {
+      correoMensaje.textContent = "Error";
+      correoMensaje.classList.add("error");
+      correoValido = false;
+    }
+
+  }, 500);
+});
+
+
+
 // Actualización parcial de usuarios
 document.getElementById('actualizarForm').addEventListener('submit', async (e) => {
   e.preventDefault();

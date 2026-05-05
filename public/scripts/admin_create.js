@@ -90,17 +90,16 @@ cedulaInput.addEventListener("input", () => {
         apellidoInput.value = data.apellidos;
 
         cedulaMensaje.textContent = "Datos cargados";
-        cedulaMensaje.className = "ok";
+        cedulaMensaje.classList.add("ok");
       } else {
         cedulaMensaje.textContent = "No encontrada";
-        cedulaMensaje.className = "error";
+        cedulaMensaje.classList.add("error");
       }
 
     } catch {
       cedulaMensaje.textContent = "Error al consultar";
-      cedulaMensaje.className = "error";
+      cedulaMensaje.classList.add("error");
     }
-
   }, 500);
 });
 
@@ -134,23 +133,60 @@ telefonoInput.addEventListener("input", () => {
 
     try {
       const data = await apiFetch(`/api/usuarios/verificacion-whatsapp/${tel}`);
+      const existe = data?.existe === true;
 
-      telefonoMensaje.textContent = data.isValid
-        ? "Tiene WhatsApp"
-        : "No tiene WhatsApp";
-
-      telefonoMensaje.className = data.isValid ? "ok" : "error";
-
-    } catch {
-      telefonoMensaje.textContent = "Error";
-      telefonoMensaje.className = "error";
+      if (existe) {
+        telefonoMensaje.textContent = "Este número SÍ tiene WhatsApp";
+        telefonoMensaje.classList.add("ok");
+      } else {
+        telefonoMensaje.textContent = "Este número NO tiene WhatsApp";
+        telefonoMensaje.classList.add("error");
+      }
+    } catch (e) {
+      console.error(e);
+      telefonoMensaje.textContent = "Error al verificar el número.";
+      telefonoMensaje.classList.add("error");
     }
-
   }, 500);
 });
 
+// async function validarWhatsApp(telefono) {
+//   telefonoMensaje.textContent = "";
+//   telefonoMensaje.className = "telefono-mensaje";
+
+//   // Validar que tenga 10 dígitos y empiece con 0
+//   if (!/^0\d{9}$/.test(telefono)) {
+//     telefonoMensaje.textContent = "Número inválido. Debe comenzar con 0 y tener 10 dígitos.";
+//     telefonoMensaje.classList.add("error");
+//     return;
+//   }
+
+//   try {
+//     const res = await fetch(`/api/usuarios/verificacion-whatsapp/${telefono}`);
+
+//     if (!res.ok) throw new Error("Error en verificación");
+
+//     const data = await res.json();
+
+//     const existe = data?.existe === true;
+
+//     if (existe) {
+//       telefonoMensaje.textContent = "Este número SÍ tiene WhatsApp";
+//       telefonoMensaje.classList.add("ok");
+//     } else {
+//       telefonoMensaje.textContent = "Este número NO tiene WhatsApp";
+//       telefonoMensaje.classList.add("error");
+//     }
+//   } catch (e) {
+//     console.error(e);
+//     telefonoMensaje.textContent = "Error al verificar el número.";
+//     telefonoMensaje.classList.add("error");
+//   }
+// }
+
 
 //verificar correo
+
 let timeoutCorreo;
 correoInput.addEventListener("input", () => {
   clearTimeout(timeoutCorreo);
@@ -170,11 +206,11 @@ correoInput.addEventListener("input", () => {
         ? "Correo válido"
         : "Correo inválido";
 
-      correoMensaje.className = data.isValid ? "ok" : "error";
+      correoMensaje.classList.add(data.isValid ? "ok" : "error");
 
     } catch {
       correoMensaje.textContent = "Error";
-      correoMensaje.className = "error";
+      correoMensaje.classList.add("error");
       correoValido = false;
     }
 

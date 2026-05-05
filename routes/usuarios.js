@@ -392,23 +392,31 @@ usuariosRouter.get("/verificacion-whatsapp/:telefono", async (req, res) => {
   }
 
   const telefonoIntl = 593 + telefono.slice(1);
+  // const telefonoInt2 = `593${telefono.slice(1)}`;
 
   try {
     const data = await fetchConTimeout(
-      `https://webservices.ec/api/checkwhatsapp/${telefonoIntl}`,
+      //este y el isvalid, status es con web services pero no me agarraba xd
+      // `https://webservices.ec/api/checkwhatsapp/${telefonoIntl}`,
+      // {
+      //   headers: {
+      //     Accept: "application/json",
+      //     Authorization: `Bearer ${process.env.TOKEN_WEB_SERVICES}`
+      //   }
+      // }
+      `https://apiconsult.zampisoft.com/api/check-phone?token=${process.env.ZAMPISOFT_TOKEN}&phone=${telefonoIntl}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.TOKEN_WEB_SERVICES}`,
-          Accept: "application/json",
-          redirect: "follow"
+          Accept: "application/json"
         }
       }
     );
 
     res.json({
       ok: true,
-      isValid: data?.data?.is_valid === true,
-      status: data?.data?.status === "valid" ? "valid" : "invalid"
+      // isValid: data?.data?.is_valid === true,
+      // status: data?.data?.status === "valid" ? "valid" : "invalid"
+      existe: data?.existe === true
     });
 
   } catch (err) {
