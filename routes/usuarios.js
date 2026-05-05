@@ -332,7 +332,12 @@ usuariosRouter.get("/verificacion/:cedula", async (req, res) => {
   try {
     const data = await fetchConTimeout(
       `https://webservices.ec/api/cedula/${cedula}`,
-      { headers: { Accept: "application/json" } }
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${process.env.TOKEN_WEB_SERVICES}`
+        }
+      }
     );
 
     const persona = data?.data?.response;
@@ -386,7 +391,7 @@ usuariosRouter.get("/verificacion-whatsapp/:telefono", async (req, res) => {
     });
   }
 
-  const telefonoIntl = "593" + telefono.slice(1);
+  const telefonoIntl = 593 + telefono.slice(1);
 
   try {
     const data = await fetchConTimeout(
@@ -394,14 +399,16 @@ usuariosRouter.get("/verificacion-whatsapp/:telefono", async (req, res) => {
       {
         headers: {
           Authorization: `Bearer ${process.env.TOKEN_WEB_SERVICES}`,
-          Accept: "application/json"
+          Accept: "application/json",
+          redirect: "follow"
         }
       }
     );
 
     res.json({
       ok: true,
-      isValid: data?.data?.is_valid === true
+      isValid: data?.data?.is_valid === true,
+      status: data?.data?.status === "valid" ? "valid" : "invalid"
     });
 
   } catch (err) {
