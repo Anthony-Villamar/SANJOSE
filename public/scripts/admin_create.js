@@ -60,6 +60,18 @@ let correoValido = false;
 
 let timeoutCedula;
 
+nombreInput.addEventListener("input", () => {
+  nombreInput.value = nombreInput.value.replace(/[^a-zA-Z\s]/g, "");
+});
+
+apellidoInput.addEventListener("input", () => {
+  apellidoInput.value = apellidoInput.value.replace(/[^a-zA-Z\s]/g, "");
+});
+
+cedulaInput.addEventListener("input", () => {
+  cedulaInput.value = cedulaInput.value.replace(/\D/g, "");
+});
+
 cedulaInput.addEventListener("input", () => {
   clearTimeout(timeoutCedula);
 
@@ -106,11 +118,17 @@ const telefonoMensaje = document.getElementById("telefonoMensaje");
 let timeoutTelefono;
 
 telefonoInput.addEventListener("input", () => {
+  telefonoInput.value = telefonoInput.value.replace(/\D/g, "");
+});
+
+
+telefonoInput.addEventListener("input", () => {
   clearTimeout(timeoutTelefono);
 
   timeoutTelefono = setTimeout(async () => {
     const tel = telefonoInput.value.trim();
     if (tel.length !== 10) return;
+
 
     telefonoMensaje.textContent = "Verificando...";
 

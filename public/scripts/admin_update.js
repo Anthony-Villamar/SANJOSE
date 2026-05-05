@@ -12,10 +12,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-//verificar numero de whatsapp con apiconsult
+//verificar pattners de los inputs
 const telefonoInput = document.getElementById("telefonoActualizar");
 const telefonoMensaje = document.getElementById("telefonoMensaje");
 
+telefonoInput.addEventListener("input", () => {
+  telefonoInput.value = telefonoInput.value.replace(/\D/g, "");
+});
+
+const nombreInput = document.getElementById('nombreActualizar');
+const apellidoInput = document.getElementById('apellidoActualizar');
+const cedulaInput = document.getElementById('cedulaActualizar');
+
+
+nombreInput.addEventListener("input", () => {
+  nombreInput.value = nombreInput.value.replace(/[^a-zA-Z\s]/g, "");
+});
+
+apellidoInput.addEventListener("input", () => {
+  apellidoInput.value = apellidoInput.value.replace(/[^a-zA-Z\s]/g, "");
+});
+
+cedulaInput.addEventListener("input", () => {
+  cedulaInput.value = cedulaInput.value.replace(/\D/g, "");
+});
+
+
+//verificar numero de whatsapp
 async function validarWhatsApp(telefono) {
   telefonoMensaje.textContent = "";
   telefonoMensaje.className = "telefono-mensaje";
@@ -101,6 +124,7 @@ document.getElementById('actualizarForm').addEventListener('submit', async (e) =
   const rol = document.getElementById('rolActualizar').value;
   const usuario = document.getElementById('usuarioActualizar').value.trim();
   const contrasena = document.getElementById('contrasenaActualizar').value.trim();
+
 
 
 
