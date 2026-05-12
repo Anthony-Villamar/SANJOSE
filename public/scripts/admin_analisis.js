@@ -220,6 +220,7 @@ document.getElementById("btn-regenerar").addEventListener("click", () => {
   };
 });
 
+
 // function renderSingleMonth(dom, data, inicio, fin) {
 //   // --- helpers responsivos ---
 //   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));

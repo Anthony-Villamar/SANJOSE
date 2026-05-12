@@ -15,7 +15,6 @@ import iaRouter from './routes/ia.js';
 import verifyRouter from "./routes/twilio.js";
 import reportesRouter from "./routes/reportesPDF.js";
 
-
 // Config
 dotenv.config();
 const app = express();

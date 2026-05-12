@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   //   alert("Error al obtener estadísticas TOP.");
   // }
 
-  // 🔽 Estadísticas generales
+  // Estadísticas generales
   try {
     const res = await fetch('/api/estadisticas/detalle', { credentials: 'include' });
     const detalle = await res.json();
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    // 🔽 Mostrar mensajes motivacionales con OpenAI
+    // Mostrar mensajes motivacionales con OpenAI
     if (detalle.promedio_puntualidad != null && detalle.promedio_trato != null && detalle.promedio_resolucion != null) {
       mostrarMensajesMotivacionales(detalle);
     }
