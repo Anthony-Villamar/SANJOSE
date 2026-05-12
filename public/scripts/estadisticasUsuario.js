@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // 🔽 Botón FILTRAR
+  // Botón FILTRAR
   document.getElementById('filtrarBtn').addEventListener('click', async () => {
     const tipoFiltro = document.getElementById('tipoFiltro').value;
 
