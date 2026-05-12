@@ -7,7 +7,7 @@ const estadisticasRouter = express.Router();
 // Estadísticas detalladas por usuario logueado
 estadisticasRouter.get('/detalle', async (req, res) => {
   const cedula = req.session.user?.cedula;
-  if (!cedula) return res.status(401).json({ message: 'Usuario no autenticado' });
+  // if (!cedula) return res.status(401).json({ message: 'Usuario no autenticado' });
 
   try {
     const sql = `
@@ -59,9 +59,9 @@ LIMIT 3;
 // Estadísticas por día del usuario logueado
 estadisticasRouter.get('/detalle/diario', async (req, res) => {
   const cedula = req.session.user?.cedula;
-  if (!cedula) {
-    return res.status(401).json({ message: 'Usuario no autenticado' });
-  }
+  // if (!cedula) {
+  //   return res.status(401).json({ message: 'Usuario no autenticado' });
+  // }
 
   try {
     const sql = `
@@ -116,9 +116,9 @@ estadisticasRouter.get('/detalle/promedio', async (req, res) => {
   const cedula = req.session.user?.cedula;
   const { desde, hasta } = req.query;
 
-  if (!cedula) {
-    return res.status(401).json({ message: 'Usuario no autenticado' });
-  }
+  // if (!cedula) {
+  //   return res.status(401).json({ message: 'Usuario no autenticado' });
+  // }
 
   if (!desde || !hasta) {
     return res.status(400).json({ message: 'Fechas requeridas' });
