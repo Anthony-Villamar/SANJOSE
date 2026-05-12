@@ -57,13 +57,13 @@ function renderRadarCalendar(data, inicio, fin) {
       const day = new Date(d.dia);
       return day >= monthStart && day <= monthEnd;
     });
-    
+
     // Crear un div para este mes
     const monthDiv = document.createElement("div");
     monthDiv.style.width = "100%";
     // monthDiv.style.height = "1000px";
     // monthDiv.style.maxWidth = "1200px"; // opcional, límite para que no se estire demasiado
-    monthDiv.style.margin = "0 auto"; 
+    monthDiv.style.margin = "0 auto";
     monthDiv.style.marginBottom = "20px";
     container.appendChild(monthDiv);
 
@@ -76,11 +76,11 @@ function renderRadarCalendar(data, inicio, fin) {
 }
 
 function renderSingleMonth(dom, data, inicio, fin) {
-  const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   function weeksInMonth(d) {
     const first = new Date(d.getFullYear(), d.getMonth(), 1);
-    const last  = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+    const last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
     const firstDow = (first.getDay() + 6) % 7;
     return Math.ceil((firstDow + last.getDate()) / 7);
   }
@@ -99,8 +99,8 @@ function renderSingleMonth(dom, data, inicio, fin) {
     return { cellW, rows, font, header, legendSpace, pieR, h };
   }
 
-  const monthTitle = inicio.toLocaleDateString('es-ES', { month:'long', year:'numeric' })
-                           .replace(/^\w/, c => c.toUpperCase());
+  const monthTitle = inicio.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+    .replace(/^\w/, c => c.toUpperCase());
 
   let M = metrics();
   dom.style.height = M.h + 'px';
@@ -110,15 +110,15 @@ function renderSingleMonth(dom, data, inicio, fin) {
 
   const pies = data.map((d, i) => ({
     type: 'pie',
-    id: 'pie-'+i,
+    id: 'pie-' + i,
     center: [d.dia.split('T')[0], 1],
     radius: M.pieR,
     coordinateSystem: 'calendar',
     label: { formatter: '{c}', position: 'inside', fontSize: Math.max(9, M.font - 2) },
     data: [
       { name: 'Puntualidad', value: +d.puntualidad },
-      { name: 'Trato',       value: +d.trato },
-      { name: 'Resolución',  value: +d.resolucion }
+      { name: 'Trato', value: +d.trato },
+      { name: 'Resolución', value: +d.resolucion }
     ]
   }));
 
@@ -126,7 +126,7 @@ function renderSingleMonth(dom, data, inicio, fin) {
     title: { text: monthTitle, left: 'center', top: 10, textStyle: { fontSize: Math.max(12, M.font + 2) } },
     tooltip: { confine: true, formatter: p => p.seriesType === 'pie' ? `${p.name}: ${p.value}` : p.value[0] },
     legend: {
-      data: ['Puntualidad','Trato','Resolución'],
+      data: ['Puntualidad', 'Trato', 'Resolución'],
       bottom: 8,
       itemGap: 14,
       itemWidth: 16,
@@ -155,7 +155,7 @@ function renderSingleMonth(dom, data, inicio, fin) {
           align: 'left',
           verticalAlign: 'top',
           formatter: p => p.value[0].split('-')[2],
-          offset: [-(M.cellW/2)+6, -(M.cellW/2)+6],
+          offset: [-(M.cellW / 2) + 6, -(M.cellW / 2) + 6],
           fontSize: Math.max(11, M.font)
         },
         data: scatterData
@@ -171,8 +171,8 @@ function renderSingleMonth(dom, data, inicio, fin) {
       legend: { textStyle: { fontSize: Math.max(9, M.font - 2) } },
       calendar: { cellSize: [M.cellW, M.cellW], bottom: M.legendSpace },
       series: [
-        { id: 'label', label: { offset: [-(M.cellW/2)+6, -(M.cellW/2)+6], fontSize: Math.max(11, M.font) } },
-        ...data.map((_, i) => ({ id: 'pie-'+i, radius: M.pieR, label: { fontSize: Math.max(9, M.font - 2) } }))
+        { id: 'label', label: { offset: [-(M.cellW / 2) + 6, -(M.cellW / 2) + 6], fontSize: Math.max(11, M.font) } },
+        ...data.map((_, i) => ({ id: 'pie-' + i, radius: M.pieR, label: { fontSize: Math.max(9, M.font - 2) } }))
       ]
     });
     chart.resize();
@@ -181,6 +181,44 @@ function renderSingleMonth(dom, data, inicio, fin) {
   window.addEventListener('resize', () => chart.resize(), { passive: true });
 }
 
+document.getElementById("btn-reporte").addEventListener("click", () => {
+  const inicio = document.getElementById("fecha-inicio").value;
+  const fin = document.getElementById("fecha-fin").value;
+  const area = document.getElementById("area").value;
+
+  if (!inicio || !fin) return alert("Selecciona fechas");
+
+  const url = `/api/reportes/calificaciones/pdf?inicio=${inicio}&fin=${fin}&area=${area}`;
+
+  const iframe = document.getElementById("pdf-preview");
+  iframe.src = url;
+
+  document.getElementById("preview-container").style.display = "block";
+
+  document.getElementById("btn-descargar").onclick = () => {
+    window.open(url, "_blank");
+  };
+});
+
+document.getElementById("btn-regenerar").addEventListener("click", () => {
+  // document.getElementById("preview-container").style.display = "none";
+  const inicio = document.getElementById("fecha-inicio").value;
+  const fin = document.getElementById("fecha-fin").value;
+  const area = document.getElementById("area").value;
+
+  if (!inicio || !fin) return alert("Selecciona fechas");
+
+  const url = `/api/reportes/calificaciones/pdf?inicio=${inicio}&fin=${fin}&area=${area}`;
+
+  const iframe = document.getElementById("pdf-preview");
+  iframe.src = url;
+
+  document.getElementById("preview-container").style.display = "block";
+
+  document.getElementById("btn-descargar").onclick = () => {
+    window.open(url, "_blank");
+  };
+});
 
 // function renderSingleMonth(dom, data, inicio, fin) {
 //   // --- helpers responsivos ---

@@ -40,36 +40,36 @@
         </form>
         <!-- Sidebar Menu -->
         <ul class="menu-list">
-            <li class="menu-item">
-              <a href="/administrador" class="menu-link">
-                <span class="material-symbols-rounded">dashboard</span>
-                <span class="menu-label">Panel</span>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a href="/administrador_analisis" class="menu-link">
-                <span class="material-symbols-rounded">insert_chart</span>
-                <span class="menu-label">Analisis</span>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a href="/administrador_create" class="menu-link">
-                <span class="material-symbols-rounded">add_ad</span>
-                <span class="menu-label">Crear usuario</span>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a href="/administrador_update" class="menu-link">
-                <span class="material-symbols-rounded">autorenew</span>
-                <span class="menu-label">Actualizar usuario</span>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a href="/administrador_deactivation" class="menu-link">
-                <span class="material-symbols-rounded">add_task</span>
-                <span class="menu-label">Desactivar usuario</span>
-              </a>
-            </li>
+          <li class="menu-item">
+            <a href="/administrador" class="menu-link">
+              <span class="material-symbols-rounded">dashboard</span>
+              <span class="menu-label">Panel</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="/administrador_analisis" class="menu-link">
+              <span class="material-symbols-rounded">insert_chart</span>
+              <span class="menu-label">Analisis</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="/administrador_create" class="menu-link">
+              <span class="material-symbols-rounded">add_ad</span>
+              <span class="menu-label">Crear usuario</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="/administrador_update" class="menu-link">
+              <span class="material-symbols-rounded">autorenew</span>
+              <span class="menu-label">Actualizar usuario</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="/administrador_deactivation" class="menu-link">
+              <span class="material-symbols-rounded">add_task</span>
+              <span class="menu-label">Desactivar usuario</span>
+            </a>
+          </li>
           <!-- <li class="menu-item">
               <a href="#" class="menu-link">
                 <span class="material-symbols-rounded">group</span>
@@ -77,12 +77,12 @@
               </a>
             </li> -->
           <li id="logoutBtn" class="menu-item">
-              <a id="logout" class="menu-link">
-                <span class="material-symbols-rounded">exit_to_app</span>
-                <!-- <span class="menu-label">Settings</span> -->
-                <span class="menu-label logoutBtn1">Cerrar sesión</span>
-              </a>
-            </li>
+            <a id="logout" class="menu-link">
+              <span class="material-symbols-rounded">exit_to_app</span>
+              <!-- <span class="menu-label">Settings</span> -->
+              <span class="menu-label logoutBtn1">Cerrar sesión</span>
+            </a>
+          </li>
         </ul>
       </div>
       <!-- Sidebar Footer -->
@@ -99,7 +99,7 @@
       </div>
     </aside>
     <!-- Site main content -->
-    
+
     <div class="main-content">
       <h2>Análisis de Solicitudes</h2>
       <div class="filtros">
@@ -117,17 +117,28 @@
           <option value="colecturia">Colecturía</option>
         </select>
 
+        <button  class="btn-pdf" id="btn-reporte">Generar PDF</button>
+
         <button id="btn-filtrar">Filtrar</button>
       </div>
 
-      
+
       <!-- <div id="radar-calendar" style="overflow-y: auto; width: 100%; padding: 40px; "> -->
       <div id="radar-calendar"></div>
-      </div>
+      
 
+    <div id="preview-container" style="display:none; margin-top:20px">
+      <iframe id="pdf-preview" width="100%" height="600px"></iframe>
+      <div>
+        <button class="btn-pdf" id="btn-descargar">Descargar</button>
+        <button class="btn-pdf" id="btn-regenerar">Regenerar</button>
+      </div>
     </div>
-    <script src="../scripts/paneladmin.js"></script>
-    <script src="../scripts/admin_analisis.js"></script>
+  </div>
+    </div>
+    
+  <script src="../scripts/paneladmin.js"></script>
+  <script src="../scripts/admin_analisis.js"></script>
 </body>
 
 </html>
