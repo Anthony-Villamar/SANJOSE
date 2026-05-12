@@ -242,8 +242,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const detalle = await res.json();
 
     document.getElementById('detalleUsuario').innerHTML = `
-      <p><strong>Promedio de Puntualidad:</strong> ${detalle.promedio_puntualidad ?? 'N/A'}</p>
-      <p><strong>Promedio de Trato:</strong> ${detalle.promedio_trato ?? 'N/A'}</p>
+      <p><strong>Promedio de tiempo de espera:</strong> ${detalle.promedio_puntualidad ?? 'N/A'}</p>
+      <p><strong>Promedio de atencion:</strong> ${detalle.promedio_trato ?? 'N/A'}</p>
       <p><strong>Promedio de Resolución:</strong> ${detalle.promedio_resolucion ?? 'N/A'}</p>
     `;
 
