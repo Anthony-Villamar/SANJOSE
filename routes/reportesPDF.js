@@ -6,7 +6,7 @@ import db from "./db.js";
 import PDFDocument from "pdfkit";
 // aqui va npm install chartjs-node-canvas
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
-import Chart from "chart.js/auto/auto.js";
+import Chart from "chart.js/auto";
 import OpenAI from "openai";
 import dotenv from "dotenv";
 
