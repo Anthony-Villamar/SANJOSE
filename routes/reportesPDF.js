@@ -3,6 +3,7 @@
 // import express from "express";
 // import db from "./db.js";
 // import PDFDocument from "pdfkit";
+//aqui va npm install chartjs-node-canvas
 // import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 // import Chart from "chart.js/auto";
 // import OpenAI from "openai";
