@@ -13,7 +13,7 @@ import usuariosRouter from './routes/usuarios.js';
 import { verificarSesion } from './middleware/sesions.js';
 import iaRouter from './routes/ia.js';
 import verifyRouter from "./routes/twilio.js";
-// import reportesRouter from "./routes/reportesPDF.js";
+import reportesRouter from "./routes/reportesPDF.js";
 
 // Config
 dotenv.config();
@@ -61,7 +61,7 @@ app.use('/api/estadisticas', estadisticasRouter);
 app.use('/api/usuarios', usuariosRouter);
 app.use('/api', iaRouter);
 app.use("/api/twilio", verifyRouter);
-// app.use("/api/reportes", reportesRouter);
+app.use("/api/reportes", reportesRouter);
 
 
 // Redirecciones a páginas
