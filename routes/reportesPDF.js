@@ -1,4 +1,5 @@
-//si vale pero incomptatible con las versiones de chartjs y canvas, revisar luego
+//si vale pero incomptatible con las versiones de chartjs 
+// y canvas, revisar luego
 
 // import express from "express";
 // import db from "./db.js";
