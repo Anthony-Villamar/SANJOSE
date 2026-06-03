@@ -15,9 +15,6 @@
   "dependencies": {
     "@js-temporal/polyfill": "0.5.1",
     "bcrypt": "6.0.0",
-    "canvas": "^3.2.3",
-    "chart.js": "^4.5.1",
-    "chartjs-node-canvas": "^5.0.0",
     "dotenv": "17.2.2",
     "express": "5.1.0",
     "express-session": "1.18.2",
